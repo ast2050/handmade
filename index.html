@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f5f0">
+    <title>ハンドメイドレジ</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi44OP44Oz44OJ44Oh44Kk44OJ44Os44K4IiwiYmFja2dyb3VuZF9jb2xvciI6IiNmNWY1ZjAiLCJ0aGVtZV9jb2xvciI6IiNmNWY1ZjAiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNFJTNDcmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgZmlsbD0nJTIzOGY5ZjhkJy8lM0UlM0N0ZXh0IHg9JzUwJTI1JyB5PSc1MCUyNScgZm9udC1zaXplPScyNTAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGR5PScuMzVlbScgZmlsbD0nd2hpdGUnIGZvbnQtZmFtaWx5PSdBcmlhbCwgc2Fucy1zZXJpZiclM0XjgqwlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --sage-green: #8f9f8d;
+            --sage-green-light: #a8b5a6;
+            --sage-green-dark: #7a8878;
+            --sand-beige: #d4c5b0;
+            --sand-beige-light: #e6dcc8;
+            --off-white: #f5f5f0;
+            --soft-gray: #b8b8b0;
+        }
+        
+        * {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8e8dc 100%);
+        }
+        
+        /* カテゴリー別の色 */
+        .category-sachet { 
+            background: linear-gradient(135deg, #c8d8c0 0%, #b5c9ad 100%);
+            color: #4a5a48;
+        }
+        .category-candle { 
+            background: linear-gradient(135deg, #e6dcc8 0%, #d4c5b0 100%);
+            color: #6b5d4f;
+        }
+        .category-other { 
+            background: linear-gradient(135deg, #d0d0c8 0%, #b8b8b0 100%);
+            color: #5a5a52;
+        }
+        
+        .cart-item {
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-green-dark) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(143, 159, 141, 0.2);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(143, 159, 141, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: white;
+            border: 1.5px solid var(--sage-green-light);
+            color: var(--sage-green-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-secondary:hover {
+            background: #f9f9f6;
+            border-color: var(--sage-green);
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid var(--sage-green);
+            color: var(--sage-green-dark);
+            font-weight: 500;
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .product-card:active {
+            transform: scale(0.97);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 1.5px solid var(--sage-green-light);
+            color: var(--sage-green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .quantity-btn:active {
+            transform: scale(0.9);
+            background: #f5f5f0;
+        }
+        
+        .cart-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .selection-btn {
+            border: 1.5px solid #e0e0d8;
+            background: white;
+            transition: all 0.2s;
+            border-radius: 12px;
+        }
+        
+        .selection-btn.selected {
+            background: var(--sage-green);
+            color: white;
+            border-color: var(--sage-green);
+        }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input, select {
+            border: 1.5px solid #e0e0d8;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--sage-green);
+            box-shadow: 0 0 0 3px rgba(143, 159, 141, 0.1);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #d0d0c8;
+            border-radius: 13px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .toggle-switch.active {
+            background: var(--sage-green);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            left: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="max-w-2xl mx-auto min-h-screen bg-white shadow-2xl">
+        <!-- ヘッダー -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-50" style="background: linear-gradient(to bottom, #ffffff, #fafaf8);">
+            <h1 class="text-center text-xl font-medium py-5 tracking-wide" style="color: var(--sage-green-dark);">ハンドメイドレジ</h1>
+            <div class="flex border-t border-gray-200">
+                <button onclick="switchTab('sales')" id="tab-sales" class="flex-1 py-4 text-sm font-medium tab-active">販売</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="flex-1 py-4 text-sm font-medium text-gray-500">設定</button>
+                <button onclick="switchTab('history')" id="tab-history" class="flex-1 py-4 text-sm font-medium text-gray-500">履歴</button>
+            </div>
+        </header>
+
+        <!-- 販売タブ -->
+        <div id="sales-tab" class="p-6">
+            <!-- 商品一覧 -->
+            <div class="mb-6">
+                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">商品選択</h2>
+                <div id="products-list" class="grid grid-cols-2 gap-3"></div>
+            </div>
+
+            <!-- カート -->
+            <div class="rounded-2xl p-5 mb-6" style="background: linear-gradient(135deg, #f9f9f6 0%, #f0f0ea 100%);">
+                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">カート</h2>
+                <div id="cart-items" class="mb-4"></div>
+                <div class="border-t pt-4" style="border-color: #e0e0d8;">
+                    <div class="flex justify-between text-lg font-semibold" style="color: var(--sage-green-dark);">
+                        <span>合計</span>
+                        <span id="total-amount">¥0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 会計情報 -->
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">性別</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectGender('女性')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">女性</button>
+                        <button onclick="selectGender('男性')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">男性</button>
+                        <button onclick="selectGender('その他')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">その他</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">年齢層</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectAge('10代以下')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">10代以下</button>
+                        <button onclick="selectAge('20代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">20代</button>
+                        <button onclick="selectAge('30代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">30代</button>
+                        <button onclick="selectAge('40代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">40代</button>
+                        <button onclick="selectAge('50代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">50代</button>
+                        <button onclick="selectAge('60代以上')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">60代以上</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">預かり金額</label>
+                    <input type="number" id="payment-input" class="w-full px-5 py-4 text-lg" placeholder="0" style="font-weight: 500;">
+                    <div class="text-right mt-3">
+                        <span class="text-sm" style="color: var(--soft-gray);">おつり: </span>
+                        <span id="change-amount" class="text-xl font-bold" style="color: var(--sage-green-dark);">¥0</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button onclick="clearCart()" class="flex-1 py-4 btn-secondary rounded-xl font-medium">クリア</button>
+                    <button onclick="completeCheckout()" class="flex-1 py-4 btn-primary rounded-xl font-medium text-white">会計完了</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 設定タブ -->
+        <div id="settings-tab" class="p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">商品登録</h2>
+                <div class="space-y-4">
+                    <input type="text" id="product-name" class="w-full px-5 py-3" placeholder="商品名">
+                    <input type="number" id="product-price" class="w-full px-5 py-3" placeholder="価格">
+                    <select id="product-category" class="w-full px-5 py-3">
+                        <option value="sachet">サシェ</option>
+                        <option value="candle">キャンドル</option>
+                        <option value="other">その他</option>
+                    </select>
+                    <button onclick="addProduct()" class="w-full py-4 btn-primary rounded-xl font-medium text-white">商品を追加</button>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">登録商品一覧</h2>
+                <div id="settings-products-list" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- 履歴タブ -->
+        <div id="history-tab" class="p-6 hidden">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-sm font-semibold" style="color: var(--sage-green-dark);">売上履歴</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportCSV()" class="px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: linear-gradient(135deg, #6b9a6e 0%, #5a8a5d 100%);">CSV出力</button>
+                    <button onclick="clearHistory()" class="px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: linear-gradient(135deg, #c87a7a 0%, #b86a6a 100%);">全削除</button>
+                </div>
+            </div>
+            <div id="history-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <script>
+        // データ管理
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+        let cart = [];
+        let selectedGender = '';
+        let selectedAge = '';
+
+        // 初期化
+        function init() {
+            renderProducts();
+            renderSettingsProducts();
+            renderHistory();
+            updateCartDisplay();
+        }
+
+        // タブ切り替え
+        function switchTab(tab) {
+            document.querySelectorAll('[id$="-tab"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.add('text-gray-500');
+            });
+            
+            document.getElementById(`${tab}-tab`).classList.remove('hidden');
+            const activeTab = document.getElementById(`tab-${tab}`);
+            activeTab.classList.add('tab-active');
+            activeTab.classList.remove('text-gray-500');
+        }
+
+        // 商品追加
+        function addProduct() {
+            const name = document.getElementById('product-name').value.trim();
+            const price = parseInt(document.getElementById('product-price').value);
+            const category = document.getElementById('product-category').value;
+
+            if (!name || !price) {
+                alert('商品名と価格を入力してください');
+                return;
+            }
+
+            products.push({
+                id: Date.now(),
+                name,
+                price,
+                category,
+                active: true
+            });
+
+            localStorage.setItem('products', JSON.stringify(products));
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+            
+            renderProducts();
+            renderSettingsProducts();
+        }
+
+        // 商品表示
+        function renderProducts() {
+            const container = document.getElementById('products-list');
+            const activeProducts = products.filter(p => p.active);
+            
+            if (activeProducts.length === 0) {
+                container.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">商品を登録してください</div>';
+                return;
+            }
+            
+            container.innerHTML = activeProducts.map(product => `
+                <button onclick="addToCart(${product.id})" class="category-${product.category} product-card p-5 rounded-2xl">
+                    <div class="font-medium text-base">${product.name}</div>
+                    <div class="text-sm mt-2 font-semibold">¥${product.price.toLocaleString()}</div>
+                </button>
+            `).join('');
+        }
+
+        // 設定画面の商品一覧
+        function renderSettingsProducts() {
+            const container = document.getElementById('settings-products-list');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-400">商品がありません</div>';
+                return;
+            }
+            
+            container.innerHTML = products.map(product => `
+                <div class="flex items-center justify-between p-4 bg-white rounded-2xl border" style="border-color: #e0e0d8;">
+                    <div class="flex-1">
+                        <div class="font-medium" style="color: var(--sage-green-dark);">${product.name}</div>
+                        <div class="text-sm mt-1" style="color: var(--soft-gray);">¥${product.price.toLocaleString()}</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="toggle-switch ${product.active ? 'active' : ''}" onclick="toggleProduct(${product.id})"></div>
+                        <button onclick="deleteProduct(${product.id})" class="text-sm font-medium" style="color: #c87a7a;">削除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 商品の有効/無効切り替え
+        function toggleProduct(id) {
+            const product = products.find(p => p.id === id);
+            product.active = !product.active;
+            localStorage.setItem('products', JSON.stringify(products));
+            renderProducts();
+            renderSettingsProducts();
+        }
+
+        // 商品削除
+        function deleteProduct(id) {
+            if (!confirm('この商品を削除しますか?')) return;
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('products', JSON.stringify(products));
+            renderProducts();
+            renderSettingsProducts();
+        }
+
+        // カートに追加
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.productId === productId);
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+
+            updateCartDisplay();
+        }
+
+        // カート表示更新
+        function updateCartDisplay() {
+            const container = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="text-center py-6" style="color: var(--soft-gray);">カートは空です</div>';
+            } else {
+                container.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item cart-card">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1">
+                                <div class="font-medium" style="color: var(--sage-green-dark);">${item.name}</div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <input type="number" value="${item.price}" onchange="updateItemPrice(${index}, this.value)" class="w-24 px-3 py-2 text-sm font-medium" style="color: var(--sage-green-dark);">
+                                </div>
+                            </div>
+                            <div class="text-lg font-bold" style="color: var(--sage-green-dark);">¥${(item.price * item.quantity).toLocaleString()}</div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <button onclick="decreaseQuantity(${index})" class="quantity-btn">−</button>
+                                <span class="font-semibold text-lg w-8 text-center" style="color: var(--sage-green-dark);">${item.quantity}</span>
+                                <button onclick="increaseQuantity(${index})" class="quantity-btn">+</button>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-sm font-medium" style="color: #c87a7a;">削除</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateTotal();
+        }
+
+        // 個数増加
+        function increaseQuantity(index) {
+            cart[index].quantity++;
+            updateCartDisplay();
+        }
+
+        // 個数減少
+        function decreaseQuantity(index) {
+            if (cart[index].quantity > 1) {
+                cart[index].quantity--;
+                updateCartDisplay();
+            } else {
+                // 数量が1の場合は削除
+                removeFromCart(index);
+            }
+        }
+
+        // 商品単価変更
+        function updateItemPrice(index, newPrice) {
+            cart[index].price = parseInt(newPrice) || 0;
+            updateCartDisplay();
+        }
+
+        // カートから削除
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        // 合計金額更新
+        function updateTotal() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('total-amount').textContent = `¥${total.toLocaleString()}`;
+            updateChange();
+        }
+
+        // おつり計算
+        function updateChange() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const payment = parseInt(document.getElementById('payment-input').value) || 0;
+            const change = payment - total;
+            document.getElementById('change-amount').textContent = `¥${Math.max(0, change).toLocaleString()}`;
+        }
+
+        document.getElementById('payment-input').addEventListener('input', updateChange);
+
+        // 性別選択
+        function selectGender(gender) {
+            selectedGender = gender;
+            document.querySelectorAll('.gender-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // 年齢層選択
+        function selectAge(age) {
+            selectedAge = age;
+            document.querySelectorAll('.age-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // 会計完了
+        function completeCheckout() {
+            if (cart.length === 0) {
+                alert('カートが空です');
+                return;
+            }
+
+            if (!selectedGender || !selectedAge) {
+                alert('性別と年齢層を選択してください');
+                return;
+            }
+
+            const timestamp = new Date().toISOString();
+            const saleData = {
+                timestamp,
+                items: cart.map(item => ({...item})),
+                gender: selectedGender,
+                age: selectedAge,
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            };
+
+            salesHistory.push(saleData);
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+
+            alert('会計が完了しました');
+            clearCart();
+            renderHistory();
+        }
+
+        // カートクリア
+        function clearCart() {
+            cart = [];
+            selectedGender = '';
+            selectedAge = '';
+            document.getElementById('payment-input').value = '';
+            document.querySelectorAll('.gender-btn, .age-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            updateCartDisplay();
+        }
+
+        // 履歴表示
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            
+            if (salesHistory.length === 0) {
+                container.innerHTML = '<div class="text-center py-10" style="color: var(--soft-gray);">履歴がありません</div>';
+                return;
+            }
+
+            container.innerHTML = salesHistory.slice().reverse().map(sale => `
+                <div class="p-5 rounded-2xl border" style="background: white; border-color: #e0e0d8;">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="text-xs" style="color: var(--soft-gray);">${new Date(sale.timestamp).toLocaleString('ja-JP')}</div>
+                        <div class="text-base font-bold" style="color: var(--sage-green-dark);">¥${sale.total.toLocaleString()}</div>
+                    </div>
+                    <div class="text-xs mb-3" style="color: var(--soft-gray);">${sale.gender} / ${sale.age}</div>
+                    <div class="space-y-1">
+                        ${sale.items.map(item => `
+                            <div class="text-sm" style="color: var(--sage-green-dark);">${item.name} (¥${item.price.toLocaleString()}) × ${item.quantity}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // CSV出力（Excel対応版）
+        function exportCSV() {
+            if (salesHistory.length === 0) {
+                alert('出力するデータがありません');
+                return;
+            }
+
+            const rows = [['日時', '商品名', '単価', '個数', '小計', '性別', '年齢層']];
+            
+            salesHistory.forEach(sale => {
+                sale.items.forEach(item => {
+                    rows.push([
+                        new Date(sale.timestamp).toLocaleString('ja-JP'),
+                        item.name,
+                        item.price,
+                        item.quantity,
+                        item.price * item.quantity,
+                        sale.gender,
+                        sale.age
+                    ]);
+                });
+            });
+
+            // カンマ区切りでCSV作成
+            const csv = rows.map(row => row.join(',')).join('\n');
+            
+            // UTF-8 BOMを付与
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `売上履歴_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        // 履歴削除
+        function clearHistory() {
+            if (!confirm('すべての履歴を削除しますか?')) return;
+            salesHistory = [];
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+            renderHistory();
+        }
+
+        // アプリ起動
+        init();
+
+        // PWA対応
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,').catch(() => {});
+        }
+    </script>
+</body>
+</html>
