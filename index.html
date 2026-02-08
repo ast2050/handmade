@@ -8,7 +8,7 @@
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi44OP44Oz44OJ44Oh44Kk44OJ44Os44K4IiwiYmFja2dyb3VuZF9jb2xvciI6IiNmNWY1ZjAiLCJ0aGVtZV9jb2xvciI6IiNmNWY1ZjAiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNFJTNDcmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgZmlsbD0nJTIzOGY5ZjhkJy8lM0UlM0N0ZXh0IHg9JzUwJTI1JyB5PSc1MCUyNScgZm9udC1zaXplPScyNTAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGR5PScuMzVlbScgZmlsbD0nd2hpdGUnIGZvbnQtZmFtaWx5PSdBcmlhbCwgc2Fucy1zZXJpZiclM0XjgqwlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
         
         :root {
             --sage-green: #8f9f8d;
@@ -101,8 +101,8 @@
         }
         
         .quantity-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: white;
             border: 1.5px solid var(--sage-green-light);
@@ -110,7 +110,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 18px;
             transition: all 0.2s;
         }
         
@@ -123,8 +124,8 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
         }
         
         .selection-btn {
@@ -146,13 +147,13 @@
             margin: 0;
         }
         
-        input, select {
+        input, select, textarea {
             border: 1.5px solid #e0e0d8;
             border-radius: 12px;
             transition: all 0.2s;
         }
         
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--sage-green);
             box-shadow: 0 0 0 3px rgba(143, 159, 141, 0.1);
@@ -187,6 +188,58 @@
         .toggle-switch.active::after {
             left: 24px;
         }
+        
+        /* 合計金額エリアの強調 */
+        .total-display {
+            background: linear-gradient(135deg, var(--sage-green) 0%, var(--sage-green-dark) 100%);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(143, 159, 141, 0.25);
+        }
+        
+        /* モーダル */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -204,65 +257,50 @@
         <!-- 販売タブ -->
         <div id="sales-tab" class="p-6">
             <!-- 商品一覧 -->
-            <div class="mb-6">
+            <div class="mb-8">
                 <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">商品選択</h2>
                 <div id="products-list" class="grid grid-cols-2 gap-3"></div>
             </div>
 
             <!-- カート -->
-            <div class="rounded-2xl p-5 mb-6" style="background: linear-gradient(135deg, #f9f9f6 0%, #f0f0ea 100%);">
-                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">カート</h2>
+            <div class="rounded-2xl p-6 mb-8" style="background: linear-gradient(135deg, #f9f9f6 0%, #f0f0ea 100%);">
+                <h2 class="text-sm font-semibold mb-5" style="color: var(--sage-green-dark);">カート</h2>
                 <div id="cart-items" class="mb-4"></div>
-                <div class="border-t pt-4" style="border-color: #e0e0d8;">
-                    <div class="flex justify-between text-lg font-semibold" style="color: var(--sage-green-dark);">
-                        <span>合計</span>
-                        <span id="total-amount">¥0</span>
-                    </div>
+            </div>
+
+            <!-- 合計金額表示エリア（大きく強調） -->
+            <div class="total-display">
+                <div class="flex justify-between items-baseline mb-3">
+                    <span class="text-white text-lg font-medium opacity-90">合計金額</span>
+                    <span id="total-amount" class="text-white text-4xl font-bold">¥0</span>
                 </div>
             </div>
 
-            <!-- 会計情報 -->
-            <div class="space-y-5">
+            <!-- お会計エリア -->
+            <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">性別</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="selectGender('女性')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">女性</button>
-                        <button onclick="selectGender('男性')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">男性</button>
-                        <button onclick="selectGender('その他')" class="gender-btn selection-btn py-3 px-4 text-sm font-medium">その他</button>
+                    <label class="block text-sm font-semibold mb-3" style="color: var(--sage-green-dark);">預かり金額</label>
+                    <input type="number" id="payment-input" class="w-full px-6 py-5 text-2xl font-semibold" placeholder="0" style="color: var(--sage-green-dark);">
+                </div>
+
+                <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, #f9f9f6 0%, #f0f0ea 100%);">
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-base font-medium" style="color: var(--soft-gray);">おつり</span>
+                        <span id="change-amount" class="text-3xl font-bold" style="color: var(--sage-green-dark);">¥0</span>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">年齢層</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="selectAge('10代以下')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">10代以下</button>
-                        <button onclick="selectAge('20代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">20代</button>
-                        <button onclick="selectAge('30代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">30代</button>
-                        <button onclick="selectAge('40代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">40代</button>
-                        <button onclick="selectAge('50代')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">50代</button>
-                        <button onclick="selectAge('60代以上')" class="age-btn selection-btn py-3 px-4 text-sm font-medium">60代以上</button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-3" style="color: var(--sage-green-dark);">預かり金額</label>
-                    <input type="number" id="payment-input" class="w-full px-5 py-4 text-lg" placeholder="0" style="font-weight: 500;">
-                    <div class="text-right mt-3">
-                        <span class="text-sm" style="color: var(--soft-gray);">おつり: </span>
-                        <span id="change-amount" class="text-xl font-bold" style="color: var(--sage-green-dark);">¥0</span>
-                    </div>
-                </div>
-
-                <div class="flex gap-3 pt-2">
-                    <button onclick="clearCart()" class="flex-1 py-4 btn-secondary rounded-xl font-medium">クリア</button>
-                    <button onclick="completeCheckout()" class="flex-1 py-4 btn-primary rounded-xl font-medium text-white">会計完了</button>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="clearCart()" class="flex-1 py-4 btn-secondary rounded-xl font-semibold text-base">クリア</button>
+                    <button onclick="initiateCheckout()" class="flex-1 py-5 btn-primary rounded-xl font-semibold text-base text-white">会計完了</button>
                 </div>
             </div>
         </div>
 
         <!-- 設定タブ -->
         <div id="settings-tab" class="p-6 hidden">
-            <div class="mb-6">
+            <!-- 商品登録 -->
+            <div class="mb-8">
                 <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">商品登録</h2>
                 <div class="space-y-4">
                     <input type="text" id="product-name" class="w-full px-5 py-3" placeholder="商品名">
@@ -276,9 +314,21 @@
                 </div>
             </div>
 
-            <div>
+            <!-- 登録商品一覧 -->
+            <div class="mb-8">
                 <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">登録商品一覧</h2>
                 <div id="settings-products-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Googleスプレッドシート連携設定 -->
+            <div class="p-6 rounded-2xl" style="background: linear-gradient(135deg, #f9f9f6 0%, #f0f0ea 100%);">
+                <h2 class="text-sm font-semibold mb-4" style="color: var(--sage-green-dark);">Googleスプレッドシート連携</h2>
+                <div class="space-y-3">
+                    <label class="block text-xs font-medium" style="color: var(--soft-gray);">Google Apps Script URL</label>
+                    <textarea id="gas-url" rows="3" class="w-full px-4 py-3 text-sm" placeholder="https://script.google.com/macros/s/..."></textarea>
+                    <button onclick="saveGASUrl()" class="w-full py-3 btn-primary rounded-xl font-medium text-white text-sm">URL を保存</button>
+                    <p class="text-xs mt-2" style="color: var(--soft-gray);">※ GASのデプロイURLを設定すると、会計完了時に自動的にスプレッドシートへデータが送信されます</p>
+                </div>
             </div>
         </div>
 
@@ -295,13 +345,48 @@
         </div>
     </div>
 
+    <!-- 顧客属性入力モーダル -->
+    <div id="customer-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold mb-6 text-center" style="color: var(--sage-green-dark);">顧客情報の入力</h2>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-3" style="color: var(--sage-green-dark);">性別</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="selectModalGender('女性')" class="modal-gender-btn selection-btn py-3 px-4 text-sm font-medium">女性</button>
+                    <button onclick="selectModalGender('男性')" class="modal-gender-btn selection-btn py-3 px-4 text-sm font-medium">男性</button>
+                    <button onclick="selectModalGender('その他')" class="modal-gender-btn selection-btn py-3 px-4 text-sm font-medium">その他</button>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-sm font-semibold mb-3" style="color: var(--sage-green-dark);">年齢層</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="selectModalAge('10代以下')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">10代以下</button>
+                    <button onclick="selectModalAge('20代')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">20代</button>
+                    <button onclick="selectModalAge('30代')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">30代</button>
+                    <button onclick="selectModalAge('40代')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">40代</button>
+                    <button onclick="selectModalAge('50代')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">50代</button>
+                    <button onclick="selectModalAge('60代以上')" class="modal-age-btn selection-btn py-3 px-4 text-sm font-medium">60代以上</button>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 py-4 btn-secondary rounded-xl font-semibold">キャンセル</button>
+                <button onclick="saveCustomerData()" class="flex-1 py-4 btn-primary rounded-xl font-semibold text-white">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // データ管理
         let products = JSON.parse(localStorage.getItem('products')) || [];
         let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
         let cart = [];
-        let selectedGender = '';
-        let selectedAge = '';
+        let tempSaleData = null; // 一時的な売上データ
+        let modalGender = '';
+        let modalAge = '';
+        let gasUrl = localStorage.getItem('gasUrl') || '';
 
         // 初期化
         function init() {
@@ -309,6 +394,11 @@
             renderSettingsProducts();
             renderHistory();
             updateCartDisplay();
+            
+            // GAS URL の読み込み
+            if (gasUrl) {
+                document.getElementById('gas-url').value = gasUrl;
+            }
         }
 
         // タブ切り替え
@@ -323,6 +413,14 @@
             const activeTab = document.getElementById(`tab-${tab}`);
             activeTab.classList.add('tab-active');
             activeTab.classList.remove('text-gray-500');
+        }
+
+        // GAS URL保存
+        function saveGASUrl() {
+            const url = document.getElementById('gas-url').value.trim();
+            gasUrl = url;
+            localStorage.setItem('gasUrl', url);
+            alert('Google Apps Script URLを保存しました');
         }
 
         // 商品追加
@@ -441,17 +539,17 @@
                     <div class="cart-item cart-card">
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex-1">
-                                <div class="font-medium" style="color: var(--sage-green-dark);">${item.name}</div>
+                                <div class="font-semibold text-base" style="color: var(--sage-green-dark);">${item.name}</div>
                                 <div class="flex items-center gap-2 mt-2">
-                                    <input type="number" value="${item.price}" onchange="updateItemPrice(${index}, this.value)" class="w-24 px-3 py-2 text-sm font-medium" style="color: var(--sage-green-dark);">
+                                    <input type="number" value="${item.price}" onchange="updateItemPrice(${index}, this.value)" class="w-28 px-3 py-2 text-sm font-semibold" style="color: var(--sage-green-dark);">
                                 </div>
                             </div>
-                            <div class="text-lg font-bold" style="color: var(--sage-green-dark);">¥${(item.price * item.quantity).toLocaleString()}</div>
+                            <div class="text-xl font-bold" style="color: var(--sage-green-dark);">¥${(item.price * item.quantity).toLocaleString()}</div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-4">
                                 <button onclick="decreaseQuantity(${index})" class="quantity-btn">−</button>
-                                <span class="font-semibold text-lg w-8 text-center" style="color: var(--sage-green-dark);">${item.quantity}</span>
+                                <span class="font-bold text-xl w-10 text-center" style="color: var(--sage-green-dark);">${item.quantity}</span>
                                 <button onclick="increaseQuantity(${index})" class="quantity-btn">+</button>
                             </div>
                             <button onclick="removeFromCart(${index})" class="text-sm font-medium" style="color: #c87a7a;">削除</button>
@@ -475,7 +573,6 @@
                 cart[index].quantity--;
                 updateCartDisplay();
             } else {
-                // 数量が1の場合は削除
                 removeFromCart(index);
             }
         }
@@ -509,62 +606,108 @@
 
         document.getElementById('payment-input').addEventListener('input', updateChange);
 
-        // 性別選択
-        function selectGender(gender) {
-            selectedGender = gender;
-            document.querySelectorAll('.gender-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-        }
-
-        // 年齢層選択
-        function selectAge(age) {
-            selectedAge = age;
-            document.querySelectorAll('.age-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-        }
-
-        // 会計完了
-        function completeCheckout() {
+        // 会計開始（モーダル表示）
+        function initiateCheckout() {
             if (cart.length === 0) {
                 alert('カートが空です');
                 return;
             }
 
-            if (!selectedGender || !selectedAge) {
+            // 一時的な売上データを保存
+            tempSaleData = {
+                timestamp: new Date().toISOString(),
+                items: cart.map(item => ({...item})),
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            };
+
+            // モーダルを表示
+            showModal();
+        }
+
+        // モーダル表示
+        function showModal() {
+            modalGender = '';
+            modalAge = '';
+            document.querySelectorAll('.modal-gender-btn, .modal-age-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('customer-modal').style.display = 'flex';
+        }
+
+        // モーダル閉じる
+        function closeModal() {
+            document.getElementById('customer-modal').style.display = 'none';
+            tempSaleData = null;
+        }
+
+        // モーダル内で性別選択
+        function selectModalGender(gender) {
+            modalGender = gender;
+            document.querySelectorAll('.modal-gender-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // モーダル内で年齢層選択
+        function selectModalAge(age) {
+            modalAge = age;
+            document.querySelectorAll('.modal-age-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // 顧客データ保存（会計完了）
+        async function saveCustomerData() {
+            if (!modalGender || !modalAge) {
                 alert('性別と年齢層を選択してください');
                 return;
             }
 
-            const timestamp = new Date().toISOString();
-            const saleData = {
-                timestamp,
-                items: cart.map(item => ({...item})),
-                gender: selectedGender,
-                age: selectedAge,
-                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            };
+            // 売上データに顧客属性を追加
+            tempSaleData.gender = modalGender;
+            tempSaleData.age = modalAge;
 
-            salesHistory.push(saleData);
+            // LocalStorageに保存
+            salesHistory.push(tempSaleData);
             localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+
+            // Googleスプレッドシートに送信
+            if (gasUrl) {
+                await sendToGoogleSheets(tempSaleData);
+            }
+
+            // モーダルを閉じる
+            closeModal();
 
             alert('会計が完了しました');
             clearCart();
             renderHistory();
         }
 
+        // Googleスプレッドシートに送信
+        async function sendToGoogleSheets(saleData) {
+            try {
+                const response = await fetch(gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(saleData)
+                });
+                
+                console.log('データをGoogleスプレッドシートに送信しました');
+            } catch (error) {
+                console.error('Googleスプレッドシートへの送信エラー:', error);
+            }
+        }
+
         // カートクリア
         function clearCart() {
             cart = [];
-            selectedGender = '';
-            selectedAge = '';
             document.getElementById('payment-input').value = '';
-            document.querySelectorAll('.gender-btn, .age-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
             updateCartDisplay();
         }
 
